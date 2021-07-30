@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:safe_insets/index.dart';
 
 void main() {
+  initializeViewPort();
   runApp(const MyApp());
 }
 
@@ -51,18 +52,15 @@ class _MyHomePageState extends State<MyHomePage> {
   ];
 
   Widget _bottomNavigationBar(int selectedIndex) => SafeAreaWrap(
-        SafeArea(
-          child: BottomNavigationBar(
-            onTap: (int index) => setState(() => _selectedIndex = index),
-            currentIndex: selectedIndex,
-            items: const [
-              BottomNavigationBarItem(
-                  icon: Icon(Icons.local_dining), label: 'Page1'),
-              BottomNavigationBarItem(
-                  icon: Icon(Icons.assignment), label: 'Page2'),
-            ],
-          ),
-          bottom: true,
+        BottomNavigationBar(
+          onTap: (int index) => setState(() => _selectedIndex = index),
+          currentIndex: selectedIndex,
+          items: const [
+            BottomNavigationBarItem(
+                icon: Icon(Icons.local_dining), label: 'Page1'),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.assignment), label: 'Page2'),
+          ],
         ),
       );
 
@@ -118,10 +116,11 @@ class Page2 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: const Text('Page 2'),
-        ),
-        backgroundColor: Colors.amber,
-        body: const Text("Hello world"));
+      appBar: AppBar(
+        title: const Text('Page 2'),
+      ),
+      backgroundColor: Colors.amber,
+      body: const Text("Hello world"),
+    );
   }
 }
