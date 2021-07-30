@@ -19,12 +19,14 @@ class _SafeAreaWrap extends State<SafeAreaWrap> {
     return ValueListenableBuilder(
       valueListenable: insets,
       builder: (context, EdgeInsets inset, Widget? child) {
-        print('Inset1: $inset');
-        return AnimatedPadding(
-          padding: inset,
-          duration: kThemeAnimationDuration,
-          child: child,
-        );
+        return OrientationBuilder(builder: (context, orientation) {
+          return AnimatedPadding(
+            padding:
+                orientation == Orientation.portrait ? inset : EdgeInsets.zero,
+            duration: kThemeAnimationDuration,
+            child: child,
+          );
+        });
       },
       child: widget.child,
     );
