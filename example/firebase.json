@@ -1,0 +1,15 @@
+{
+  "hosting": [
+    {
+      "target": "gotok_dev_web_app",
+      "public": "build/web",
+      "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+      "rewrites": [
+        {
+          "source": "**",
+          "destination": "/index.html"
+        }
+      ]
+    }
+  ]
+}

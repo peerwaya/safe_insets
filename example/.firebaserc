@@ -1,0 +1,14 @@
+{
+  "targets": {
+    "recordlydev": {
+      "hosting": {
+        "gotok_dev_web_app": [
+          "dev-web-gotok"
+        ]
+      }
+    }
+  },
+  "projects": {
+    "dev": "recordlydev"
+  }
+}
