@@ -4,6 +4,7 @@ library safe_area_insets;
 import 'package:js/js.dart';
 import 'interface.dart' as _interface;
 import 'dart:ui' as ui;
+import 'dart:html' as html;
 
 typedef InsetCallbackHandler = void Function(Inset reult);
 
@@ -20,6 +21,12 @@ external num get right;
 @JS('safeAreaInsets.bottom')
 external num get bottom;
 
+@JS('navigator.standalone')
+external bool? get standAlone;
+
+@JS('document.referrer')
+external String? get referrer;
+
 @JS()
 @anonymous
 class Inset {
@@ -29,13 +36,21 @@ class Inset {
   external num get bottom;
 }
 
+void initializeViewPort() {
+  final viewportMeta = html.MetaElement()
+    ..setAttribute('flt-viewport', '')
+    ..name = 'viewport'
+    ..content =
+        'width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover';
+  html.document.head!.append(viewportMeta);
+}
+
 class SafeAreaInsets extends _interface.SafeAreaInsets {
   late InsetCallbackHandler sub;
 
   SafeAreaInsets() {
     sub = allowInterop(_onChange);
     onChange(sub);
-    final devicePixelRatio = ui.window.devicePixelRatio;
     value = value.copyWith(
       left: left.isNaN ? 0 : left.toDouble() / devicePixelRatio,
       top: top.isNaN ? 0 : top.toDouble() / devicePixelRatio,
@@ -50,8 +65,16 @@ class SafeAreaInsets extends _interface.SafeAreaInsets {
     super.dispose();
   }
 
+  num get devicePixelRatio {
+    return 1; //ui.window.devicePixelRatio;
+  }
+
+  bool get isInStandaloneMode =>
+      (html.window.matchMedia('(display-mode: standalone)').matches) ||
+      (standAlone ?? false) ||
+      (referrer ?? '').contains('android-app://');
+
   void _onChange(Inset result) {
-    final devicePixelRatio = ui.window.devicePixelRatio;
     value = value.copyWith(
       left: result.left.isNaN ? 0 : result.left.toDouble() / devicePixelRatio,
       top: result.top.isNaN ? 0 : result.top.toDouble() / devicePixelRatio,
