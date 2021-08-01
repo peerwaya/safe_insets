@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:safe_insets/index.dart';
 import 'index.dart';
 
 class SafeAreaWrap extends StatefulWidget {
@@ -19,12 +20,15 @@ class _SafeAreaWrap extends State<SafeAreaWrap> {
     return ValueListenableBuilder(
       valueListenable: insets,
       builder: (context, EdgeInsets inset, Widget? child) {
+        print('Insets: $inset');
         return OrientationBuilder(builder: (context, orientation) {
           return AnimatedPadding(
-            padding:
-                orientation == Orientation.portrait ? inset : EdgeInsets.zero,
-            duration: kThemeAnimationDuration,
+            padding: orientation == Orientation.portrait
+                ? inset
+                : inset.copyWith(left: 0, right: 0),
+            duration: const Duration(milliseconds: 100),
             child: child,
+            curve: Curves.fastLinearToSlowEaseIn,
           );
         });
       },
