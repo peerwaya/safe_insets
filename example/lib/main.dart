@@ -68,6 +68,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.amber,
+      extendBody: true,
       body: PageTransitionSwitcher(
         transitionBuilder: (
           Widget child,
