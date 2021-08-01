@@ -1,12 +1,15 @@
 @JS()
 library safe_area_insets;
 
+import 'dart:async';
+
 import 'package:js/js.dart';
 import 'interface.dart' as _interface;
+import 'inset.dart';
 import 'dart:ui' as ui;
 import 'dart:html' as html;
 
-typedef InsetCallbackHandler = void Function(Inset reult);
+typedef InsetCallbackHandler = void Function(InsetJs result);
 
 @JS('safeAreaInsets.onChange')
 external void onChange(InsetCallbackHandler callback);
@@ -29,7 +32,7 @@ external String? get referrer;
 
 @JS()
 @anonymous
-class Inset {
+class InsetJs {
   external num get left;
   external num get top;
   external num get right;
@@ -47,6 +50,7 @@ void initializeViewPort() {
 
 class SafeAreaInsets extends _interface.SafeAreaInsets {
   late InsetCallbackHandler sub;
+  Timer? _debounce;
 
   SafeAreaInsets() {
     sub = allowInterop(_onChange);
@@ -62,6 +66,7 @@ class SafeAreaInsets extends _interface.SafeAreaInsets {
   @override
   dispose() {
     offChange(sub);
+    _debounce?.cancel();
     super.dispose();
   }
 
@@ -74,14 +79,24 @@ class SafeAreaInsets extends _interface.SafeAreaInsets {
       (standAlone ?? false) ||
       (referrer ?? '').contains('android-app://');
 
-  void _onChange(Inset result) {
-    value = value.copyWith(
-      left: result.left.isNaN ? 0 : result.left.toDouble() / devicePixelRatio,
-      top: result.top.isNaN ? 0 : result.top.toDouble() / devicePixelRatio,
+  void _onChange(InsetJs result) {
+    // if (_debounce?.isActive ?? false) _debounce?.cancel();
+    // _debounce = Timer(const Duration(milliseconds: 200), () {
+    //   final inset = toInset(result);
+    //   if (value != inset) {
+    //     value = inset;
+    //   }
+    // });
+    value = toInset(result);
+  }
+
+  Inset toInset(InsetJs inset) {
+    return Inset(
+      left: inset.left.isNaN ? 0 : inset.left.toDouble() / devicePixelRatio,
+      top: inset.top.isNaN ? 0 : inset.top.toDouble() / devicePixelRatio,
       bottom:
-          result.bottom.isNaN ? 0 : result.bottom.toDouble() / devicePixelRatio,
-      right:
-          result.right.isNaN ? 0 : result.right.toDouble() / devicePixelRatio,
+          inset.bottom.isNaN ? 0 : inset.bottom.toDouble() / devicePixelRatio,
+      right: inset.right.isNaN ? 0 : inset.right.toDouble() / devicePixelRatio,
     );
   }
 }
