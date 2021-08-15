@@ -13,22 +13,36 @@ class SafeAreaWrap extends StatefulWidget {
   }
 }
 
-class _SafeAreaWrap extends State<SafeAreaWrap> {
+class _SafeAreaWrap extends State<SafeAreaWrap> with WidgetsBindingObserver {
   final SafeAreaInsets insets = SafeAreaInsets();
-  Size? _size;
+  late Size _lastSize;
+  double heightChange = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _lastSize = WidgetsBinding.instance!.window.physicalSize;
+    //print('currentSize: $_lastSize');
+    WidgetsBinding.instance!.addObserver(this);
+  }
+
   @override
   void dispose() {
+    WidgetsBinding.instance!.removeObserver(this);
     insets.dispose();
     super.dispose();
   }
 
   @override
-  void didChangeDependencies() {
-    final size = MediaQuery.of(context).size;
-    if (_size == null) {
-      _size = size;
-    } else if (_size != size) {}
-    super.didChangeDependencies();
+  void didChangeMetrics() {
+    setState(() {
+      Size newSize = WidgetsBinding.instance!.window.physicalSize;
+      // print('newSize: $newSize');
+      // print('oldSize: $_lastSize');
+      heightChange = newSize.height - _lastSize.height;
+      _lastSize = newSize;
+      //print('heightChange: $heightChange');
+    });
   }
 
   @override
@@ -36,19 +50,22 @@ class _SafeAreaWrap extends State<SafeAreaWrap> {
     return ValueListenableBuilder(
       valueListenable: insets,
       builder: (context, Inset inset, Widget? child) {
+        final double bottomInset = heightChange < 0 ? 0 : inset.bottom;
+        // print('inset: $inset');
+        // print('bottomInset: $bottomInset');
         return OrientationBuilder(builder: (context, orientation) {
           return AnimatedPadding(
             padding: orientation == Orientation.portrait
                 ? EdgeInsets.only(
                     left: inset.left,
                     right: inset.right,
-                    bottom: inset.bottom,
+                    bottom: bottomInset,
                     top: inset.top)
                 : EdgeInsets.only(
                     left: 0, right: 0, bottom: inset.bottom, top: inset.top),
             duration: kThemeAnimationDuration,
             child: child,
-            curve: Curves.fastOutSlowIn,
+            curve: Curves.linear,
           );
         });
       },
