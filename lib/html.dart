@@ -1,12 +1,11 @@
 @JS()
 library safe_area_insets;
 
-import 'dart:async';
-
+import 'package:browser_adapter/io.dart';
 import 'package:js/js.dart';
 import 'interface.dart' as _interface;
 import 'inset.dart';
-import 'dart:ui' as ui;
+// ignore: avoid_web_libraries_in_flutter
 import 'dart:html' as html;
 
 typedef InsetCallbackHandler = void Function(InsetJs result);
@@ -50,9 +49,11 @@ void initializeViewPort() {
 
 class SafeAreaInsets extends _interface.SafeAreaInsets {
   late InsetCallbackHandler sub;
-  Timer? _debounce;
 
   SafeAreaInsets() {
+    if (!isSafariBrowser()) {
+      return;
+    }
     sub = allowInterop(_onChange);
     onChange(sub);
     value = value.copyWith(
@@ -65,8 +66,9 @@ class SafeAreaInsets extends _interface.SafeAreaInsets {
 
   @override
   dispose() {
-    offChange(sub);
-    _debounce?.cancel();
+    if (isSafariBrowser()) {
+      offChange(sub);
+    }
     super.dispose();
   }
 
@@ -74,23 +76,11 @@ class SafeAreaInsets extends _interface.SafeAreaInsets {
     return 1; //ui.window.devicePixelRatio;
   }
 
-  bool get isInStandaloneMode =>
-      (html.window.matchMedia('(display-mode: standalone)').matches) ||
-      (standAlone ?? false) ||
-      (referrer ?? '').contains('android-app://');
-
   void _onChange(InsetJs result) {
-    // if (_debounce?.isActive ?? false) _debounce?.cancel();
-    // _debounce = Timer(const Duration(milliseconds: 200), () {
-    //   final inset = toInset(result);
-    //   if (value != inset) {
-    //     value = inset;
-    //   }
-    // });
-    value = toInset(result);
+    value = _toInset(result);
   }
 
-  Inset toInset(InsetJs inset) {
+  Inset _toInset(InsetJs inset) {
     return Inset(
       left: inset.left.isNaN ? 0 : inset.left.toDouble() / devicePixelRatio,
       top: inset.top.isNaN ? 0 : inset.top.toDouble() / devicePixelRatio,

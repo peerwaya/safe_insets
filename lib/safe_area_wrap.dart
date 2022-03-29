@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:safe_insets/index.dart';
-import 'inset.dart';
 import 'index.dart';
 
 class SafeAreaWrap extends StatefulWidget {
@@ -14,41 +13,37 @@ class SafeAreaWrap extends StatefulWidget {
 }
 
 class _SafeAreaWrap extends State<SafeAreaWrap> with WidgetsBindingObserver {
-  final SafeAreaInsets insets = SafeAreaInsets();
+  final SafeAreaInsets _insets = SafeAreaInsets();
   late Size _lastSize;
   double heightChange = 0;
 
   @override
   void initState() {
     super.initState();
-    _lastSize = WidgetsBinding.instance!.window.physicalSize;
-    //print('currentSize: $_lastSize');
-    WidgetsBinding.instance!.addObserver(this);
+    _lastSize = WidgetsBinding.instance.window.physicalSize;
+    WidgetsBinding.instance.addObserver(this);
   }
 
   @override
   void dispose() {
-    WidgetsBinding.instance!.removeObserver(this);
-    insets.dispose();
+    WidgetsBinding.instance.removeObserver(this);
+    _insets.dispose();
     super.dispose();
   }
 
   @override
   void didChangeMetrics() {
     setState(() {
-      Size newSize = WidgetsBinding.instance!.window.physicalSize;
-      // print('newSize: $newSize');
-      // print('oldSize: $_lastSize');
+      Size newSize = WidgetsBinding.instance.window.physicalSize;
       heightChange = newSize.height - _lastSize.height;
       _lastSize = newSize;
-      //print('heightChange: $heightChange');
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder(
-      valueListenable: insets,
+      valueListenable: _insets,
       builder: (context, Inset inset, Widget? child) {
         final double bottomInset = heightChange < 0 ? 0 : inset.bottom;
         // print('inset: $inset');

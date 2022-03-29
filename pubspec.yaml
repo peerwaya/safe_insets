@@ -12,6 +12,9 @@ dependencies:
     sdk: flutter
   flutter_web_plugins:
     sdk: flutter
+  browser_adapter:
+    git:
+      url: https://github.com/KurobiHq/browser_adapter.git
 
 dev_dependencies:
   flutter_test:
