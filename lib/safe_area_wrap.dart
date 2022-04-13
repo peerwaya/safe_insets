@@ -12,32 +12,13 @@ class SafeAreaWrap extends StatefulWidget {
   }
 }
 
-class _SafeAreaWrap extends State<SafeAreaWrap> with WidgetsBindingObserver {
+class _SafeAreaWrap extends State<SafeAreaWrap> {
   final SafeAreaInsets _insets = SafeAreaInsets();
-  late Size _lastSize;
-  double heightChange = 0;
-
-  @override
-  void initState() {
-    super.initState();
-    _lastSize = WidgetsBinding.instance.window.physicalSize;
-    WidgetsBinding.instance.addObserver(this);
-  }
 
   @override
   void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
     _insets.dispose();
     super.dispose();
-  }
-
-  @override
-  void didChangeMetrics() {
-    setState(() {
-      Size newSize = WidgetsBinding.instance.window.physicalSize;
-      heightChange = newSize.height - _lastSize.height;
-      _lastSize = newSize;
-    });
   }
 
   @override
@@ -45,24 +26,23 @@ class _SafeAreaWrap extends State<SafeAreaWrap> with WidgetsBindingObserver {
     return ValueListenableBuilder(
       valueListenable: _insets,
       builder: (context, Inset inset, Widget? child) {
-        final double bottomInset = heightChange < 0 ? 0 : inset.bottom;
-        // print('inset: $inset');
-        // print('bottomInset: $bottomInset');
-        return OrientationBuilder(builder: (context, orientation) {
-          return AnimatedPadding(
-            padding: orientation == Orientation.portrait
-                ? EdgeInsets.only(
-                    left: inset.left,
-                    right: inset.right,
-                    bottom: bottomInset,
-                    top: inset.top)
-                : EdgeInsets.only(
-                    left: 0, right: 0, bottom: inset.bottom, top: inset.top),
-            duration: kThemeAnimationDuration,
-            child: child,
-            curve: Curves.linear,
-          );
-        });
+        return OrientationBuilder(
+          builder: (context, orientation) {
+            return AnimatedPadding(
+              padding: orientation == Orientation.portrait
+                  ? EdgeInsets.only(
+                      left: inset.left,
+                      right: inset.right,
+                      bottom: inset.bottom,
+                      top: inset.top)
+                  : EdgeInsets.only(
+                      left: 0, right: 0, bottom: inset.bottom, top: inset.top),
+              duration: kThemeAnimationDuration,
+              child: child,
+              curve: Curves.linear,
+            );
+          },
+        );
       },
       child: widget.child,
     );
