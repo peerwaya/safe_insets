@@ -1,7 +1,6 @@
 @JS()
 library safe_area_insets;
 
-import 'package:browser_adapter/io.dart';
 import 'package:js/js.dart';
 import 'interface.dart' as _interface;
 import 'inset.dart';
@@ -51,9 +50,6 @@ class SafeAreaInsets extends _interface.SafeAreaInsets {
   late InsetCallbackHandler sub;
 
   SafeAreaInsets() {
-    if (!isSafariBrowser()) {
-      return;
-    }
     sub = allowInterop(_onChange);
     onChange(sub);
     value = value.copyWith(
@@ -66,9 +62,7 @@ class SafeAreaInsets extends _interface.SafeAreaInsets {
 
   @override
   dispose() {
-    if (isSafariBrowser()) {
-      offChange(sub);
-    }
+    offChange(sub);
     super.dispose();
   }
 
