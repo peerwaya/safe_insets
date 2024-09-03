@@ -4,8 +4,6 @@ library safe_area_insets;
 import 'package:js/js.dart';
 import 'interface.dart' as _interface;
 import 'inset.dart';
-// ignore: avoid_web_libraries_in_flutter
-import 'dart:html' as html;
 
 typedef InsetCallbackHandler = void Function(InsetJs result);
 
@@ -35,15 +33,6 @@ class InsetJs {
   external num get top;
   external num get right;
   external num get bottom;
-}
-
-void initializeViewPort() {
-  final viewportMeta = html.MetaElement()
-    ..setAttribute('flt-viewport', '')
-    ..name = 'viewport'
-    ..content =
-        'width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover';
-  html.document.head!.append(viewportMeta);
 }
 
 class SafeAreaInsets extends _interface.SafeAreaInsets {

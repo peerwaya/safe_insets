@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:safe_insets/index.dart';
-import 'index.dart';
 
 class SafeAreaWrap extends StatefulWidget {
   final Widget child;

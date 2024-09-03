@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:safe_insets/index.dart';
 
 void main() {
-  initializeViewPort();
   runApp(const MyApp());
 }
 
