@@ -1,5 +1,3 @@
-import 'package:flutter/material.dart';
-
 class Inset {
   final double left;
   final double right;
@@ -31,14 +29,17 @@ class Inset {
   }
 
   @override
-  int get hashCode => hashValues(left, right, top, bottom);
-
-  @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is Inset &&
           runtimeType == other.runtimeType &&
-          hashCode == other.hashCode;
+          left == other.left &&
+          right == other.right &&
+          top == other.top &&
+          bottom == other.bottom;
+
+  @override
+  int get hashCode => Object.hash(left, right, top, bottom);
 
   @override
   String toString() {
